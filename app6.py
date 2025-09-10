@@ -2806,97 +2806,97 @@ def delete_sports_bottomCardsData(card_id):
     return jsonify({"message": "Card deleted successfully!", "card": card})
 
 
-# ----------------------------
-# Sports page cricket trending_updates Data APIs (full CRUD)
-# ----------------------------
+# # ----------------------------
+# # Sports page cricket trending_updates Data APIs (full CRUD)
+# # ----------------------------
 
-@app.route("/sports/cricket-trending-updates", methods=["GET"])
-def get_sports_cricket_trending_updates():
-    conn = get_db_connection()
-    if not conn:
-        return jsonify({"error": "Database connection failed"}), 500
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM sports_bottomCardsData")
-    rows = fetch_all_dict(cursor)
-    cursor.close()
-    conn.close()
-    return jsonify(rows)
-
-
-@app.route("/sports/cricket-trending-updates", methods=["POST"])
-def add_sports_bottomCardsData():
-    title = request.form.get("title")
-    description=request.form.get("description")
-    image = request.files.get("image")
-    if not title:
-        return jsonify({"error": "Title is required"}), 400
-
-    image_path = upload_image_to_cloudinary(image)
-
-    conn = get_db_connection()
-    if not conn:
-        return jsonify({"error": "Database connection failed"}), 500
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO sports_bottomCardsData (title, image, description) VALUES (%s, %s, %s)", (title, image_path, description))
-    conn.commit()
-    news_id = cursor.lastrowid
-
-    cursor.close()
-    conn.close()
-
-    return jsonify({
-        "message": "News added successfully!",
-        "news": {"id": news_id, "title": title, "image": image_path,"description":description}
-    }), 201
+# @app.route("/sports/cricket-trending-updates", methods=["GET"])
+# def get_sports_cricket_trending_updates():
+#     conn = get_db_connection()
+#     if not conn:
+#         return jsonify({"error": "Database connection failed"}), 500
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM sports_bottomCardsData")
+#     rows = fetch_all_dict(cursor)
+#     cursor.close()
+#     conn.close()
+#     return jsonify(rows)
 
 
-@app.route("/sports/cricket-trending-updates/<int:card_id>", methods=["PUT"])
-def update_sports_bottomCardsData(card_id):
-    title = request.form.get("title")
-    image = request.files.get("image")
-    description=request.form.get("description")
+# @app.route("/sports/cricket-trending-updates", methods=["POST"])
+# def add_sports_bottomCardsData():
+#     title = request.form.get("title")
+#     description=request.form.get("description")
+#     image = request.files.get("image")
+#     if not title:
+#         return jsonify({"error": "Title is required"}), 400
 
-    conn = get_db_connection()
-    if not conn:
-        return jsonify({"error": "Database connection failed"}), 500
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM sports_bottomCardsData WHERE id=%s", (card_id,))
-    card = fetch_one_dict(cursor)
-    if not card:
-        cursor.close()
-        conn.close()
-        return jsonify({"error": "Card not found"}), 404
+#     image_path = upload_image_to_cloudinary(image)
 
-    new_title = title if title else card["title"]
-    new_image = upload_image_to_cloudinary(image) if image else card["image"]
-    new_description = description if description is not None else card.get("description")
-    updated_at = datetime.now()
+#     conn = get_db_connection()
+#     if not conn:
+#         return jsonify({"error": "Database connection failed"}), 500
+#     cursor = conn.cursor()
+#     cursor.execute("INSERT INTO sports_bottomCardsData (title, image, description) VALUES (%s, %s, %s)", (title, image_path, description))
+#     conn.commit()
+#     news_id = cursor.lastrowid
 
-    cursor.execute("UPDATE sports_bottomCardsData SET title=%s, image=%s, description=%s,updated_at=%s WHERE id=%s", (new_title, new_image,new_description,updated_at, card_id))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Card updated successfully!", "card": {"id": card_id, "title": new_title, "image": new_image,"description":new_description,"updated_at":updated_at}})
+#     cursor.close()
+#     conn.close()
+
+#     return jsonify({
+#         "message": "News added successfully!",
+#         "news": {"id": news_id, "title": title, "image": image_path,"description":description}
+#     }), 201
 
 
-@app.route("/sports/cricket-trending-updates/<int:card_id>", methods=["DELETE"])
-def delete_sports_bottomCardsData(card_id):
-    conn = get_db_connection()
-    if not conn:
-        return jsonify({"error": "Database connection failed"}), 500
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM sports_bottomCardsData WHERE id=%s", (card_id,))
-    card = fetch_one_dict(cursor)
-    if not card:
-        cursor.close()
-        conn.close()
-        return jsonify({"error": "Card not found"}), 404
+# @app.route("/sports/cricket-trending-updates/<int:card_id>", methods=["PUT"])
+# def update_sports_bottomCardsData(card_id):
+#     title = request.form.get("title")
+#     image = request.files.get("image")
+#     description=request.form.get("description")
 
-    cursor.execute("DELETE FROM sports_bottomCardsData WHERE id=%s", (card_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Card deleted successfully!", "card": card})
+#     conn = get_db_connection()
+#     if not conn:
+#         return jsonify({"error": "Database connection failed"}), 500
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM sports_bottomCardsData WHERE id=%s", (card_id,))
+#     card = fetch_one_dict(cursor)
+#     if not card:
+#         cursor.close()
+#         conn.close()
+#         return jsonify({"error": "Card not found"}), 404
+
+#     new_title = title if title else card["title"]
+#     new_image = upload_image_to_cloudinary(image) if image else card["image"]
+#     new_description = description if description is not None else card.get("description")
+#     updated_at = datetime.now()
+
+#     cursor.execute("UPDATE sports_bottomCardsData SET title=%s, image=%s, description=%s,updated_at=%s WHERE id=%s", (new_title, new_image,new_description,updated_at, card_id))
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
+#     return jsonify({"message": "Card updated successfully!", "card": {"id": card_id, "title": new_title, "image": new_image,"description":new_description,"updated_at":updated_at}})
+
+
+# @app.route("/sports/cricket-trending-updates/<int:card_id>", methods=["DELETE"])
+# def delete_sports_bottomCardsData(card_id):
+#     conn = get_db_connection()
+#     if not conn:
+#         return jsonify({"error": "Database connection failed"}), 500
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM sports_bottomCardsData WHERE id=%s", (card_id,))
+#     card = fetch_one_dict(cursor)
+#     if not card:
+#         cursor.close()
+#         conn.close()
+#         return jsonify({"error": "Card not found"}), 404
+
+#     cursor.execute("DELETE FROM sports_bottomCardsData WHERE id=%s", (card_id,))
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
+#     return jsonify({"message": "Card deleted successfully!", "card": card})
 
 
 
